@@ -28,7 +28,6 @@ def build_timeline(client, filter_by_location):
     for sid in sample_ids:
         raw_data = client.get("sample/id", parameters={"id": sid})
         sample_name = raw_data.get("name")
-        print(sample_name)
         for event in raw_data.get("events", []):
             all_events.append({
                 "sample_id": sid,
