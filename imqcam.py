@@ -19,7 +19,7 @@ from plotly.colors import qualitative
 def build_timeline(client, filter_by_location):
     
     # Replace this with your actual sample ID list
-    all_samples = client.get("sample") 
+    all_samples = client.get("sample", parameters={'limit': 1000})
     sample_ids = [sample["_id"] for sample in all_samples]
 
     # 1. Fetch and structure data
@@ -29,6 +29,8 @@ def build_timeline(client, filter_by_location):
         raw_data = client.get("sample/id", parameters={"id": sid})
         sample_name = raw_data.get("name")
         for event in raw_data.get("events", []):
+            if event.get("creatorName") == 'Kacper Kowalik':
+                continue
             all_events.append({
                 "sample_id": sid,
                 "sample_name": sample_name,
