@@ -21,9 +21,6 @@ def build_timeline(client, filter_by_location):
     # Replace this with your actual sample ID list
     all_samples = client.get("sample") 
     sample_ids = [sample["_id"] for sample in all_samples]
-    # print(len(sample_ids))
-    # sample_ids = sample_ids[10:13]
-   
 
     # 1. Fetch and structure data
     all_events = []
@@ -31,6 +28,7 @@ def build_timeline(client, filter_by_location):
     for sid in sample_ids:
         raw_data = client.get("sample/id", parameters={"id": sid})
         sample_name = raw_data.get("name")
+        print(sample_name)
         for event in raw_data.get("events", []):
             all_events.append({
                 "sample_id": sid,
