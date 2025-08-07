@@ -1,0 +1,15 @@
+periodictable
+pandas
+girder-client
+dash-bootstrap-components
+plotly
+dash
+typing_extensions==4.13.2
+openmsimodel
+ydata-profiling==4.5
+folium
+geopy
+pygraphviz
+jupyter-server-proxy
+matplotlib==3.7.5
+matplotlib-inline==0.1.6
