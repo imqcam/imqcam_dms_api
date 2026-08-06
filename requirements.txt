@@ -11,3 +11,4 @@ geopy
 jupyter-server-proxy
 matplotlib==3.7.5
 matplotlib-inline==0.1.6
+python-dotenv
