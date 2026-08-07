@@ -9,8 +9,6 @@ import os
 import re
 
 import pandas as pd
-import plotly.express as px
-from datetime import timedelta
 from dotenv import dotenv_values, find_dotenv, load_dotenv
 from girder_client import GirderClient
 
@@ -204,63 +202,3 @@ def extract_igsn(entry):
         if match:
             return match.group(1)
     return None
-
-
-def build_timeline(client, filter_by_location=False):
-    """Plot a timeline of sample events, one row per sample.
-
-    Args:
-        client: authenticated GirderClient
-        filter_by_location: bool, drop events with no recorded location.
-    Returns:
-        The Plotly figure.
-    """
-    all_samples = client.get("sample", parameters={"limit": 1000})
-
-    # One request per sample -- the DMS has no bulk event endpoint, so this is
-    # N+1 by necessity. It dominates the runtime of this function.
-    all_events = []
-    for sample in all_samples:
-        raw_data = client.get("sample/id", parameters={"id": sample["_id"]})
-        sample_name = raw_data.get("name")
-        for event in raw_data.get("events", []):
-            # Kacper Kowalik's events are DMS system/test noise, not lab work.
-            if event.get("creatorName") == "Kacper Kowalik":
-                continue
-            all_events.append(
-                {
-                    "sample_id": sample["_id"],
-                    "sample_name": sample_name,
-                    "event_type": event.get("eventType"),
-                    "creator": event.get("creatorName"),
-                    "comment": event.get("comment"),
-                    "timestamp": event.get("created"),
-                    "location": event.get("location"),
-                }
-            )
-
-    df = pd.DataFrame(all_events)
-    if filter_by_location:
-        # Locations are free text: blanks, 'Unknown' and stray single letters
-        # all occur. Anything shorter than two characters is not a site name.
-        location = df["location"].fillna("").astype(str).str.strip()
-        df = df[(location.str.len() > 1) & (location.str.lower() != "unknown")]
-
-    df["timestamp"] = pd.to_datetime(df["timestamp"], format="mixed", utc=False)
-    df = df.sort_values(["sample_name", "timestamp"])
-    df["timestamp_end"] = df["timestamp"] + timedelta(days=1)
-
-    fig = px.timeline(
-        df,
-        x_start="timestamp",
-        x_end="timestamp_end",
-        y="sample_name",
-        color="creator",
-        hover_data=["creator", "comment", "location"],
-    )
-    fig.update_yaxes(autorange="reversed")
-    fig.update_layout(
-        title="Sample event timeline (durations between events)", height=1200
-    )
-    fig.show()
-    return fig
