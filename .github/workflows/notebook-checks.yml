@@ -1,0 +1,33 @@
+name: Notebook checks
+
+on:
+  push:
+    paths:
+      - "**/*.ipynb"
+      - "scripts/check_notebooks.py"
+      - ".github/workflows/notebook-checks.yml"
+
+  pull_request:
+    paths:
+      - "**/*.ipynb"
+      - "scripts/check_notebooks.py"
+      - ".github/workflows/notebook-checks.yml"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install notebook validator
+        run: python -m pip install nbformat
+
+      - name: Validate notebooks
+        run: python scripts/check_notebooks.py
