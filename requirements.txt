@@ -1,0 +1,7 @@
+girder-client
+python-dotenv
+pandas
+numpy
+matplotlib
+plotly
+ipykernel

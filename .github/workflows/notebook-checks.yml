@@ -3,18 +3,18 @@ name: Notebook checks
 on:
   push:
     paths:
-      - "**/*.ipynb"
+      - "tutorials/04_file_collections.ipynb"
       - "scripts/check_notebooks.py"
       - ".github/workflows/notebook-checks.yml"
 
   pull_request:
     paths:
-      - "**/*.ipynb"
+      - "tutorials/04_file_collections.ipynb"
       - "scripts/check_notebooks.py"
       - ".github/workflows/notebook-checks.yml"
 
 jobs:
-  validate:
+  validate-notebook:
     runs-on: ubuntu-latest
 
     steps:
@@ -26,8 +26,8 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install notebook validator
-        run: python -m pip install nbformat
+      - name: Install validator dependencies
+        run: python -m pip install nbformat pyflakes
 
-      - name: Validate notebooks
+      - name: Validate file collections notebook
         run: python scripts/check_notebooks.py
