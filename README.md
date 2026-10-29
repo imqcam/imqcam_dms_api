@@ -8,7 +8,8 @@ Data lives there in two shapes. **Forms and form entries** are the curated struc
   - `01_api_endpoints.ipynb` — Raw coverage of `/form` and `/entry`, then the `/imqcam` file endpoints
   - `02_form_catalog.ipynb` — Every form, with field-level profiles and fill rates
   - `03_sample_tracking.ipynb` — `/sample` and its event history, with the custody timeline
-  - `04_file_collections.ipynb` — Find and download raw or derived files by data type and specimen IGSN, with build/part and composition context
+  - `04_file_collections.ipynb` — Find and download raw or derived items by data type, IGSN, composition, and item-name extension
+  - `05_igsn_forms.ipynb` — Export a selected IMQCAM form and one or more IGSNs to an Excel workbook in `downloads/`
   - **`analysis/`** — One notebook per form family
     - `01_build_parameters.ipynb` — Laser process parameters unified across four forms, with a unit fix validated against energy density
     - `02_flexural_fatigue.ipynb` — Four-point flexural fatigue, S–N curves and run-out handling
@@ -63,10 +64,12 @@ A further 52 entries carry `formId`s that `/form` no longer returns — retired 
 `tutorials/04_file_collections.ipynb` demonstrates the workflow a modeler can use instead of browsing the DMS manually:
 
 1. List registered measurement types such as `ebsd_raw`, `ebsd_derived`, `ct_tomography`, and `fractography_raw`.
-2. Distinguish a parent build IGSN, such as `CMXMAG00001`, from child part IGSNs, such as `CMXMAG00001-039`.
-3. Query `/imqcam/datafiles` by `data_type` and `meta.igsn`.
+2. Query one or more exact IGSNs, such as `CMXMAG00001-039`. The workflow does not expand a parent build IGSN into its child part IGSNs.
+3. Query `/imqcam/datafiles` by optional `data_type` and IGSN.
 4. Request additional item metadata, such as `meta.composition`, with the `extraFields` parameter.
 5. Load the returned items into a pandas `DataFrame` for filtering, grouping, and inspection.
-6. Download selected files into a structured local directory organized by material, build, and part.
+6. Download selected items into a structured local directory organized by the search filters captured with the results.
+
+An extension filter checks the returned **item name** only; it does not inspect a folder item's contents. When an item matches, the complete item is downloaded.
 
 The notebook also explains why `/imqcam/count` and `/imqcam/datafiles` can report different totals: the former counts classified storage files, while the latter returns queryable Girder items with the metadata needed to identify their specimen. Counts should therefore be treated as different measurements, not as interchangeable row counts.
